@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+</head>
+<body>
+    <style>
+    
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .quiz-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    #options-container {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .option {
+        padding: 10px;
+        margin: 5px;
+        background-color: #49719c;
+        color: #fff;
+        font-weight: bolder;
+        font-size: 20px;
+        border: none;
+        cursor: pointer;
+    }
+    
+    #feedback-container {
+        margin-top: 10px;
+    }
+    
+    #progress-container {
+        margin-top: 10px;
+    }
+    
+    #submit-button {
+        display: none;
+        background-color: #49719c;
+        color: #fff;
+        font-weight: bolder;
+        font-size: 20px;
+        padding: 10px 20px;
+        margin-top: 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    
+    #submit-button:hover {
+        background-color: #0056b3;
+    }
+    </style>
+    <div class="quiz-container">
+        <h1>Quiz Title</h1>
+        <div id="question-container">
+            <p id="question-text">Question goes here.</p>
+        </div>
+        <div id="options-container">
+            <button class="option" onclick="checkAnswer(this)">Option 1</button>
+            <button class="option" onclick="checkAnswer(this)">Option 2</button>
+            <button class="option" onclick="checkAnswer(this)">Option 3</button>
+            <button class="option" onclick="checkAnswer(this)">Option 4</button>
+        </div>
+        <div id="feedback-container">
+            <p id="feedback"></p>
+        </div>
+        <div id="progress-container">
+            <p>Question <span id="current-question">1</span> of <span id="total-questions">4</span></p>
+        </div>
+        <button id="submit-button" onclick="nextQuestion()">Next</button>
+    </div>
+    <script >
+      const questions = [
+    {
+        question: "What is 2 + 2?",
+        options: ["3", "4", "5", "6"],
+        answer: "4"
+    },
+    {
+        question: "What is the capital of France?",
+        options: ["London", "Berlin", "Madrid", "Paris"],
+        answer: "Paris"
+    },
+    {
+        question: "Which planet is known as the Red Planet?",
+        options: ["Mars", "Venus", "Jupiter", "Saturn"],
+        answer: "Mars"
+    },
+    {
+        question: "What is the largest mammal?",
+        options: ["Elephant", "Giraffe", "Blue Whale", "Lion"],
+        answer: "Blue Whale"
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+function loadQuestion() {
+    const questionText = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options-container");
+    const currentQ = questions[currentQuestion];
+
+    questionText.textContent = currentQ.question;
+    optionsContainer.innerHTML = "";
+
+    currentQ.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.className = "option";
+        button.addEventListener("click", function () {
+            checkAnswer(this);
+        });
+        optionsContainer.appendChild(button);
+    });
+
+    document.getElementById("submit-button").style.display = "none";
+}
+
+function checkAnswer(selectedOption) {
+    const currentQ = questions[currentQuestion];
+    const feedback = document.getElementById("feedback");
+
+    // Disable all options after selecting one
+    document.querySelectorAll(".option").forEach(option => {
+        option.disabled = true;
+        if (option.textContent === currentQ.answer) {
+            option.style.backgroundColor = "#28a745"; // Correct answer, highlight green
+        }
+    });
+
+    if (selectedOption.textContent === currentQ.answer) {
+        feedback.textContent = "Correct!";
+        score++;
+        selectedOption.style.backgroundColor = "#28a745"; // Selected option is correct, highlight it in green
+    } else {
+        feedback.textContent = "Wrong! The correct answer is: " + currentQ.answer;
+        selectedOption.style.backgroundColor = "#dc3545"; // Selected option is wrong, highlight it in red
+    }
+
+    document.getElementById("submit-button").style.display = "block";
+}
+
+
+function nextQuestion() {
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+        loadQuestion();
+        document.getElementById("current-question").textContent = currentQuestion + 1;
+
+        // Enable all options for the next question
+        document.querySelectorAll(".option").forEach(option => {
+            option.disabled = false;
+            option.style.backgroundColor = "#49719c";
+        });
+    } else {
+        // Quiz is finished, display the final score
+        const quizContainer = document.querySelector(".quiz-container");
+        quizContainer.innerHTML = `<h1>Quiz Completed</h1><p>Your Score: ${score} out of ${questions.length}</p>`;
+    }
+}
+
+window.onload = loadQuestion;
+
+    </script>
+</body>
+</html>
